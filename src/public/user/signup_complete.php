@@ -7,36 +7,35 @@ use App\Domain\ValueObject\InputPassword;
 use App\UseCase\UseCaseInput\SignUpInput;
 use App\UseCase\UseCaseInteractor\SignUpInteractor;
 
+$name = filter_input(INPUT_POST, 'name');
 $email = filter_input(INPUT_POST, 'email');
-$userName = filter_input(INPUT_POST, 'userName');
 $password = filter_input(INPUT_POST, 'password');
 $confirmPassword = filter_input(INPUT_POST, 'confirmPassword');
 
-session_start();
-if (empty($password) || empty($confirmPassword)) {
-    $_SESSION['errors'][] = 'パスワードを入力してください';
-}
-if ($password !== $confirmPassword) {
-    $_SESSION['errors'][] = 'パスワードが一致しません';
-}
+try {
+    session_start();
+    if (empty($password) || empty($confirmPassword)) {
+        throw new Exception('パスワードを入力してください');
+    }
+    if ($password !== $confirmPassword) {
+        throw new Exception('パスワードが一致しません');
+    }
 
-if (!empty($_SESSION['errors'])) {
-    $_SESSION['user']['name'] = $userName;
-    $_SESSION['user']['email'] = $email;
-    Redirect::handler('./signup.php');
-}
+    $userName = new UserName($name);
+    $userEmail = new Email($email);
+    $userPassword = new InputPassword($password);
+    $useCaseInput = new SignUpInput($userName, $userEmail, $userPassword);
+    $useCase = new SignUpInteractor($useCaseInput);
+    $useCaseOutput = $useCase->handler();
 
-$userName = new UserName($userName);
-$userEmail = new Email($email);
-$userPassword = new InputPassword($password);
-$useCaseInput = new SignUpInput($userName, $userEmail, $userPassword);
-$useCase = new SignUpInteractor($useCaseInput);
-$useCaseOutput = $useCase->handler();
-
-if ($useCaseOutput->isSuccess()) {
+    if (!$useCaseOutput->isSuccess()) {
+        throw new Exception($useCaseOutput->message());
+    }
     $_SESSION['message'] = $useCaseOutput->message();
     Redirect::handler('./signin.php');
-} else {
-    $_SESSION['errors'][] = $useCaseOutput->message();
+} catch (Exception $e) {
+    $_SESSION['errors'][] = $e->getMessage();
+    $_SESSION['user']['name'] = $name;
+    $_SESSION['user']['email'] = $email;
     Redirect::handler('./signup.php');
 }

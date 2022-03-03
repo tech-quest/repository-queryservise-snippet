@@ -14,7 +14,7 @@ $email = $_SESSION['user']['email'] ?? '';
   <meta charset="UTF-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>login</title>
+  <title>ユーザー登録</title>
   <link href="https://unpkg.com/tailwindcss@^2/dist/tailwind.min.css" rel="stylesheet">
 </head>
 
@@ -28,7 +28,7 @@ $email = $_SESSION['user']['email'] ?? '';
       <?php endforeach; ?>
 
       <form action="./signup_complete.php" method="POST">
-        <p><input class='border-2 border-gray-300 w-full mb-5' placeholder="User name" type=“text” name="userName" required value="<?php echo $userName; ?>"></p>
+        <p><input class='border-2 border-gray-300 w-full mb-5' placeholder="User name" type=“text” name="name" required value="<?php echo $userName; ?>"></p>
         <p><input class='border-2 border-gray-300 w-full mb-5' placeholder="Email" type=“email” name="email" required value="<?php echo $email; ?>"></p>
         <p><input class='border-2 border-gray-300 w-full mb-5' placeholder="Password" type="password" name="password"></p>
         <p><input class='border-2 border-gray-300 w-full mb-5' placeholder="Password確認" type="password" name="confirmPassword"></p>
